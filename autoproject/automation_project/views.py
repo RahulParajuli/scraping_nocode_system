@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from automation_project.scraper.scrape import scraper
+from automation_project.scraper.scrape import scraper, scraper_social_for_business_email
 from automation_project.detailsextraction.extractor import extract
 
 @csrf_exempt
@@ -13,7 +13,14 @@ def scrape_and_store(request):
         details = []
         for i, data in enumerate(scraped_data):
             scraped_data[i] = extract(data)
-            details.append(scraped_data[i])
+            scrape_data_with_email = scraped_data[i]
+            scrape_data_with_email["Company Email"] = ""
+            if scraped_data[i]['Company location'] != None:
+                facebook_search_term = scraped_data[i]['Company name'] + " " + scraped_data[i]['Company location']
+            else:
+                facebook_search_term = scraped_data[i]['Company name']
+            scrape_data_with_email["Company Email"] = scraper_social_for_business_email(facebook_search_term)
+            details.append(scrape_data_with_email)
         data = {
             "data": details
         }

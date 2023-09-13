@@ -1,3 +1,4 @@
+import re
 import time
 import requests
 import pandas as pd
@@ -10,7 +11,15 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 MAX_RETRIES = 3
+
+def parse_email(text):
+    
+    email_pattern = r'[\w\.-]+@[\w\.-]+'
+    email_holder = re.search(email_pattern, text, flags=re.IGNORECASE)
+    email = email_holder.group() if email_holder else None
+    return email
 
 def is_website_okay(url):
     try:
@@ -75,36 +84,67 @@ def scraper(url):
         driver.quit()
 
 def scraper_social_for_business_email(url):
-
     print("started facebook crawling...")
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
-    service = Service("path/to/chromedriver")
-    scraper = webdriver.Chrome(service=service, options=options)
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-blink-features")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-application-cache")
+    options.add_argument("--disable-web-security")
+    options.add_argument("--incognito")
+    prefs = {"profile.default_content_setting_values.geolocation" :2}
+    options.add_experimental_option("prefs",prefs)
+
+    options.add_argument("--disable-geolocation")
+    
+    scraper = webdriver.Chrome(options=options)
     scraper.set_window_size(2048, 1080)
     try:
         url = "https://www.google.com/search?q=" + "facebook page "+ url
         scraper.get(url)
-        scraper.find_element(By.CLASS_NAME, "yuRUbf").click()
-        time.sleep(2)
-        scraper.find_element(By.CLASS_NAME,"x1i10hfl.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x1ypdohk.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.x16tdsg8.x1hl2dhg.xggy1nq.x87ps6o.x1lku1pv.x1a2a7pz.x6s0dn4.x14yjl9h.xudhj91.x18nykt9.xww2gxu.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x78zum5.xl56j7k.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1n2onr6.xc9qbxq.x14qfxbe.x1qhmfi1").click()
-        time.sleep(2)
-        contact_number = scraper.find_elements(By.CLASS_NAME, "x193iq5w.xeuugli.x13faqbe.x1vvkbs.x10flsy6.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x41vudc.x6prxxf.xvq8zen.xo1l8bm.xzsf02u.x1yc453h")
-        contact_list = []
-        for contact in contact_number:
-            try:
-                contact_list.append(contact.text)
-            except:
-                contact_list.append("")
-        return contact_list
-    except:
+
+        data = scraper.find_element(By.CLASS_NAME, "byrV5b")
+        data.click()
+        
+        time.sleep(3)
+        # username_box = scraper.find_elements(By.NAME, 'email')[1]
+        # username_box.send_keys("9813350184")
+       
+        
+        # password_box = scraper.find_element(By.NAME, 'pass')
+        # password_box.send_keys("Aszx12#c")[1]
+        
+        # login_box = scraper.find_element(By.XPATH, '//*[@id="login_popup_cta_form"]/div/div[5]/div/div')
+        # login_box.click()
+        
+        time.sleep(5)
+        business_email = scraper.find_element(By.CLASS_NAME, "xieb3on")
+        
+        email = parse_email(business_email.text)
+        scraper.quit()
+        return email
+    except Exception as e:
+        print(e)
         return ""
+    
+   
         
 if __name__ == '__main__':
-    content = input('Enter the content to search: ')
-    url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
-    print(is_website_okay(url))
-    print(scraper(url))
+    #content = input('Enter the content to search: ')
+    #url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
+    schools = [
+        "Littel Angels School Hattiban", 
+        "Rai School", 
+        "Kathmandu Model College",
+        "Kathmandu BernHardt College",
+        "Kathmandu University School of Management",
+    ]
+    for url in schools:
+    # print(is_website_okay(url))
+        print(scraper_social_for_business_email(url))
