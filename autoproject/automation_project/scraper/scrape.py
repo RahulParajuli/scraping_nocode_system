@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 import requests
@@ -11,8 +12,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from autoproject.logger import ClickClickLogger
+
 
 MAX_RETRIES = 3
+custom_logger = ClickClickLogger()
 
 def parse_email(text):
     
@@ -78,13 +82,13 @@ def scraper(url):
             time.sleep(1)
         return all_data
     except Exception as e:
-        print(f"An error occurred while processing the website: {str(e)}")
+        custom_logger.log(f"An error occurred while processing the website: {str(e)}", logging.ERROR)
         return all_data
     finally:
         driver.quit()
 
 def scraper_social_for_business_email(url):
-    print("started facebook crawling...")
+    custom_logger.log(f"started facebook crawling...", logging.INFO)
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -111,18 +115,7 @@ def scraper_social_for_business_email(url):
 
         data = scraper.find_element(By.CLASS_NAME, "byrV5b")
         data.click()
-        
-        time.sleep(3)
-        # username_box = scraper.find_elements(By.NAME, 'email')[1]
-        # username_box.send_keys("9813350184")
-       
-        
-        # password_box = scraper.find_element(By.NAME, 'pass')
-        # password_box.send_keys("Aszx12#c")[1]
-        
-        # login_box = scraper.find_element(By.XPATH, '//*[@id="login_popup_cta_form"]/div/div[5]/div/div')
-        # login_box.click()
-        
+
         time.sleep(5)
         business_email = scraper.find_element(By.CLASS_NAME, "xieb3on")
         
@@ -130,21 +123,8 @@ def scraper_social_for_business_email(url):
         scraper.quit()
         return email
     except Exception as e:
-        print(e)
+        custom_logger.log(f"An error occurred while scrapping the website: {str(e)}", logging.ERROR)
         return ""
     
    
         
-if __name__ == '__main__':
-    #content = input('Enter the content to search: ')
-    #url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
-    schools = [
-        "Littel Angels School Hattiban", 
-        "Rai School", 
-        "Kathmandu Model College",
-        "Kathmandu BernHardt College",
-        "Kathmandu University School of Management",
-    ]
-    for url in schools:
-    # print(is_website_okay(url))
-        print(scraper_social_for_business_email(url))
