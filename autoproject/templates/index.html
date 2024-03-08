@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+  body{
+    background: #f2f2f2;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  .search {
+    width: 100%;
+    position: relative;
+    display: flex;
+  }
+  
+  .searchTerm {
+    width: 100%;
+    border: 3px solid #00B4CC;
+    border-right: none;
+    padding: 5px;
+    height: 20px;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    color: #2d312f;
+  }
+  
+  .searchTerm:focus{
+    color: #00B4CC;
+  }
+
+  .searchTermII{
+    border: 3px solid #00B4CC;
+    color: #9DBFAF;
+    outline: none;
+  }
+  
+  .searchButton {
+    width: 40px;
+    height: 36px;
+    margin-top: -200px;
+    margin-left: 200px;
+    border: 1px solid #00B4CC;
+    background: #00B4CC;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0,.7);
+  }
+
+  .searchButton:hover{
+    background-color: #f2f2f2;
+    color: #00B4CC;
+  }
+
+
+  .export{
+    border: 1px solid #00B4CC;
+    background: #00B4CC;
+    text-align: center;
+    color: #fff;
+    border-radius: 5px 5px 5px 5px;
+    position: absolute;
+    top: 40%;
+    cursor: pointer;
+    left: 70%;
+    padding: 10px 10px 10px 10px;
+    height: 16px;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0,.7);
+  }
+
+  .process{
+    border: 1px solid #00B4CC;
+    background: #00B4CC;
+    text-align: center;
+    color: #fff;
+    border-radius: 5px 5px 5px 5px;
+    position: absolute;
+    top: 40%;
+    cursor: pointer;
+    left: 37%;
+    padding: 10px 10px 10px 10px;
+    font-size: 15px;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0,.7);
+  }
+
+  .export:hover, .process:hover{
+    background-color: #f2f2f2;
+    color: #00B4CC;
+  }
+
+  
+  /*Resize the wrap to see the search bar change!*/
+  .wrap{
+    width: 30%;
+    height: 60%;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  table{
+    margin-top: 280px;
+    margin-bottom: 60px;
+    margin-left: 250px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    width: 1000px;
+    max-height: 200px; /* Set max height for the table */
+  }
+  th{
+    padding: 10px;
+  }
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+    <div class="wrap">
+      <h3> Details Scrapper</h3>
+      <h4>Scraps Details from Google and Facebook</h4>
+      <div>
+        <form  method="post" class="search" action="{% url 'data' %}">
+        <input type="text" class="searchTerm" placeholder="What are you looking for?" name="content">
+        <input type="text" class="searchTermII" placeholder="Set Search Limit (Optional)" name="limit">
+      </div>
+        <button type="submit" class="searchButton" style="margin-top: 10px; margin-left:200px;">
+          <i class="fa fa-search"></i>
+      </button>
+        </form>
+        
+    </div>
+
+    <form method="POST">
+    <input class="process" id = "process"type="submit" value="Update table with selected rows"></input>
+    <a class="export" href="{% url 'download' %}"> Export Table As CSV <i class="fa fa-download"></i> </a>
+    <br> <br>  
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Company Name</th>
+                <th>Company Number</th>
+                <th>Company Location</th>
+                <th>Company Email</th>
+                <!-- Add more headers for additional columns -->
+            </tr>
+        </thead>
+        <tbody id="dataTable">
+          {% for row in data%}
+          <tr  class="row-value">
+              <td><input type="checkbox" name="selected_rows" value="{{ row.pk }}" class="row-checkbox"></td>
+              {% for column in row %}
+              <td>{{ column }}</td>
+              {% endfor %}
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </form>
+
+
+  
+<script>
+  document.getElementById('process').addEventListener('click', function() {
+      var selectedRows = [];
+      var row_values = document.getElementsByClassName("row-value");
+      var checkboxes = document.getElementsByClassName('row-checkbox');
+
+      var table = document.getElementById('dataTable');
+      var rows = table.getElementsByTagName('tr');
+      for (var i = 0; i < rows.length; i++) {
+        var instance = []
+        if (checkboxes[i].checked) {
+          var cells = rows[i].getElementsByTagName('td');
+          for (var j = 0; j < cells.length; j++) {
+              var value = cells[j].innerHTML;
+              if (j != 0 ){
+                console.log(value);
+                instance.push(value)
+              }
+
+          }
+        }
+        if (instance.length !== 0) {
+          console.log("adding the data to the selected rows")
+          selectedRows.push(instance)
+        }
+        
+      } 
+      //for (var i = 0; i < checkboxes.length; i++) {
+      //    if (checkboxes[i].checked) {
+      //        console.log(row_values[i])
+      //        selectedRows.push(checkboxes[i]);
+      //    }
+      //}
+
+      // Send selectedRows to Django function using AJAX
+      // Example AJAX code using jQuery
+      $.ajax({
+          type: 'POST',
+          url: '{% url "process_data"  %}',
+          data: {
+              'selected_rows': JSON.stringify(selectedRows),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(data) {
+              // Handle success response
+          },
+          error: function(xhr, status, error) {
+              // Handle error
+          }
+      });
+  });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</body>
+</html>

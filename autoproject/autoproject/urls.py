@@ -20,5 +20,9 @@ from automation_project import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('data', views.scrape_and_store),
+    path("", views.default_view),
+    path("/", views.default_view),
+    path("download", views.download, name="download"),
+    path('data', views.scrape_and_store, name="data"),
+    path('process_data/', views.process_data, name='process_data'),
 ]

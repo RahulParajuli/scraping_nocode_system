@@ -56,7 +56,8 @@ def scraper(url):
 
     all_data = []
     try:
-        driver = uc.Chrome(options=option)
+        driver = uc.Chrome(use_subprocess=True, options=option)
+        print(driver)
         driver.get(url)
         time.sleep(1.5)
         element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
