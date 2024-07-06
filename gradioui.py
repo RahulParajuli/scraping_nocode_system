@@ -38,7 +38,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="ClickClick Scrapper", css="footer 
     }
     
     gr.Markdown("""<h1> <center> Scrape Business Data </center>""")
-    chatbot = gr.Chatbot().style(height=450, width=100)
+    chatbot = gr.Chatbot()
     msg = gr.Textbox(placeholder="Type your query here...", autofocus = True, show_copy_button = True)
     print("Message: ", msg)
     clear = gr.ClearButton([msg, chatbot])
