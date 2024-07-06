@@ -55,6 +55,7 @@ def scraper(url):
     option.add_argument("--headless")
 
     all_data = []
+    driver = None
     try:
         driver = uc.Chrome(use_subprocess=True, options=option)
         print(driver)
