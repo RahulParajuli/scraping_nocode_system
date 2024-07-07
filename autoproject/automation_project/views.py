@@ -15,10 +15,10 @@ def scrape_and_store(request):
     # channel_layer = get_channel_layer()
     redirect("/")
     # /home/ubuntu/scraping_nocode_system/autoproject//home/ubuntu/scraping_nocode_system/autoproject/automation_project/success
-    if os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv"): 
-        os.remove("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv")
-    if os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv"): 
-        os.remove("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv")
+    if os.path.exists("to_export.csv"): 
+        os.remove("to_export.csv")
+    if os.path.exists("temp.csv"): 
+        os.remove("temp.csv")
     redirect('/')
     custom_logger.log(f'Triggered endpoint', logging.INFO)
     try:
@@ -71,7 +71,7 @@ def scrape_and_store(request):
             for index, row in df.iterrows():
                 row_dict = row.to_dict()  # Convert the row to a dictionary if needed
                 rows_list.append(list(row_dict.values()))
-            df.to_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv", index=False)
+            df.to_csv("temp.csv", index=False)
         
             
             render(request, 'index.html', {'data': rows_list})
@@ -89,14 +89,14 @@ from django.shortcuts import render
 def default_view(request=None):
     import os
     # Your logic to retrieve data or perform any operations
-    # csv_file_path = '/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv'  # Update with your CSV file path
+    # csv_file_path = 'temp.csv'  # Update with your CSV file path
     # with open(csv_file_path, 'r', newline='') as file:
     #     reader = csv.reader(file)
     df = pd.DataFrame()
-    if os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv"): 
-        df = pd.read_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv")
-    elif os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv"):  
-        df = pd.read_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv")
+    if os.path.exists("to_export.csv"): 
+        df = pd.read_csv("to_export.csv")
+    elif os.path.exists("temp.csv"):  
+        df = pd.read_csv("temp.csv")
     else : 
         return render(request, 'index.html', {"data" : []})
     # data = [x if x else ["Untraced"] for x in list(reader)]
@@ -120,11 +120,11 @@ from django.http import FileResponse
 @csrf_exempt
 def download(request):
     try:
-        file = "/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv"
+        file = "to_export.csv"
         fileopen = open(file, "rb")
         response = FileResponse(fileopen)
-        response['Content-Disposition'] = 'attachment; filename="/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv"'
-        # os.remove("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv")
+        response['Content-Disposition'] = 'attachment; filename="to_export.csv"'
+        # os.remove("to_export.csv")
         return response
     except:
         return JsonResponse({"error": "Update records before downloading"})
@@ -139,20 +139,20 @@ def process_data(request):
         data = eval(selected_rows)
         print(data)
         df = pd.DataFrame(data, columns = headers)
-        df.to_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv", index=False)
+        df.to_csv("to_export.csv", index=False)
     else : 
-        if os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv"): 
-            os.remove("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv")
-        if os.path.exists("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv"): 
-            os.remove("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv")
+        if os.path.exists("to_export.csv"): 
+            os.remove("to_export.csv")
+        if os.path.exists("temp.csv"): 
+            os.remove("temp.csv")
     #     df = pd.DataFrame()
-    #     df.to_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv", index=False)
-    #     df.to_csv("/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/to_export.csv", index=False)
+    #     df.to_csv("temp.csv", index=False)
+    #     df.to_csv("to_export.csv", index=False)
     return redirect("/")
 
 import csv 
 def display_csv(request):
-    csv_file_path = '/home/ubuntu/scraping_nocode_system/autoproject/automation_project/success/temp.csv'  # Update with your CSV file path
+    csv_file_path = 'temp.csv'  # Update with your CSV file path
     with open(csv_file_path, 'r', newline='') as file:
         reader = csv.reader(file)
         data = list(reader)
