@@ -14,7 +14,7 @@ custom_logger = ClickClickLogger()
 def scrape_and_store(request):
     # channel_layer = get_channel_layer()
     redirect("/")
-    if os.path.exists("success/success/to_export.csv"): 
+    if os.path.exists("success/to_export.csv"): 
         os.remove("success/to_export.csv")
     if os.path.exists("success/temp.csv"): 
         os.remove("success/temp.csv")
