@@ -14,10 +14,10 @@ custom_logger = ClickClickLogger()
 def scrape_and_store(request):
     # channel_layer = get_channel_layer()
     redirect("/")
-    if os.path.exists("success/to_export.csv"): 
-        os.remove("success/to_export.csv")
-    if os.path.exists("success/temp.csv"): 
-        os.remove("success/temp.csv")
+    if os.path.exists("automation_project/success/to_export.csv"): 
+        os.remove("automation_project/success/to_export.csv")
+    if os.path.exists("automation_project/success/temp.csv"): 
+        os.remove("automation_project/success/temp.csv")
     redirect('/')
     custom_logger.log(f'Triggered endpoint', logging.INFO)
     try:
@@ -70,14 +70,14 @@ def scrape_and_store(request):
             for index, row in df.iterrows():
                 row_dict = row.to_dict()  # Convert the row to a dictionary if needed
                 rows_list.append(list(row_dict.values()))
-            df.to_csv("success/temp.csv", index=False)
+            df.to_csv("automation_project/success/temp.csv", index=False)
         
             
             render(request, 'index.html', {'data': rows_list})
             return redirect('/')
         else:
             #custom_logger.log(f'Database save status\t{save}', logging.ERROR)
-            return redirect('')
+            return redirect('/')
     except Exception as e:
         custom_logger.log(f'Database save status"\t{str(e)}', logging.ERROR)
         return JsonResponse({"error": e})
@@ -88,14 +88,14 @@ from django.shortcuts import render
 def default_view(request=None):
     import os
     # Your logic to retrieve data or perform any operations
-    # csv_file_path = 'success/temp.csv'  # Update with your CSV file path
+    # csv_file_path = 'automation_project/success/temp.csv'  # Update with your CSV file path
     # with open(csv_file_path, 'r', newline='') as file:
     #     reader = csv.reader(file)
     df = pd.DataFrame()
-    if os.path.exists("success/to_export.csv"): 
-        df = pd.read_csv("success/to_export.csv")
-    elif os.path.exists("success/temp.csv"):  
-        df = pd.read_csv("success/temp.csv")
+    if os.path.exists("automation_project/success/to_export.csv"): 
+        df = pd.read_csv("automation_project/success/to_export.csv")
+    elif os.path.exists("automation_project/success/temp.csv"):  
+        df = pd.read_csv("automation_project/success/temp.csv")
     else : 
         return render(request, 'index.html', {"data" : []})
     # data = [x if x else ["Untraced"] for x in list(reader)]
@@ -118,12 +118,15 @@ from django.http import FileResponse
 
 @csrf_exempt
 def download(request):
-    file = "success/to_export.csv"
-    fileopen = open(file, "rb")
-    response = FileResponse(fileopen)
-    response['Content-Disposition'] = 'attachment; filename="success/to_export.csv"'
-    # os.remove("success/to_export.csv")
-    return response
+    try:
+        file = "automation_project/success/to_export.csv"
+        fileopen = open(file, "rb")
+        response = FileResponse(fileopen)
+        response['Content-Disposition'] = 'attachment; filename="automation_project/success/to_export.csv"'
+        # os.remove("automation_project/success/to_export.csv")
+        return response
+    except:
+        return JsonResponse({"error": "Update records before downloading"})
     
 @csrf_exempt 
 def process_data(request):
@@ -135,20 +138,20 @@ def process_data(request):
         data = eval(selected_rows)
         print(data)
         df = pd.DataFrame(data, columns = headers)
-        df.to_csv("success/to_export.csv", index=False)
+        df.to_csv("automation_project/success/to_export.csv", index=False)
     else : 
-        if os.path.exists("success/to_export.csv"): 
-            os.remove("success/to_export.csv")
-        if os.path.exists("success/temp.csv"): 
-            os.remove("success/temp.csv")
+        if os.path.exists("automation_project/success/to_export.csv"): 
+            os.remove("automation_project/success/to_export.csv")
+        if os.path.exists("automation_project/success/temp.csv"): 
+            os.remove("automation_project/success/temp.csv")
     #     df = pd.DataFrame()
-    #     df.to_csv("success/temp.csv", index=False)
-    #     df.to_csv("success/to_export.csv", index=False)
+    #     df.to_csv("automation_project/success/temp.csv", index=False)
+    #     df.to_csv("automation_project/success/to_export.csv", index=False)
     return redirect("/")
 
 import csv 
 def display_csv(request):
-    csv_file_path = 'success/temp.csv'  # Update with your CSV file path
+    csv_file_path = 'automation_project/success/temp.csv'  # Update with your CSV file path
     with open(csv_file_path, 'r', newline='') as file:
         reader = csv.reader(file)
         data = list(reader)
