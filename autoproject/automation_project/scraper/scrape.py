@@ -53,10 +53,9 @@ def scraper(url):
     driver = None
     try:
         driver = uc.Chrome(use_subprocess=True, options=option)
-        driver.set_window_size(2048, 1080)
-        print(driver)
+        time.sleep(2)
         driver.get(url)
-        driver.save_screenshot('screenshot1.png')
+        driver.save_screenshot('automation_project/gen_data/screenshot1.png')
         
         wait = WebDriverWait(driver, 20)  # Increased wait time
         
@@ -66,7 +65,7 @@ def scraper(url):
         all_data.extend(data)
         
         time.sleep(2)
-        next_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 sspfN Ehmv4e cLUxtc")))
+        next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
         next_button.click()
         time.sleep(2)
         
@@ -75,8 +74,9 @@ def scraper(url):
         all_data.extend(data)
 
         while True:
-            wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 sspfN Ehmv4e cLUxtc")))
-            buttons = driver.find_elements(By.CLASS_NAME, "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 sspfN Ehmv4e cLUxtc")
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
+            buttons = driver.find_elements(By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")
+
             time.sleep(2)
             if len(buttons) == 1:
                 break
