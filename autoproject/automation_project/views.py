@@ -11,21 +11,22 @@ import csv
 
 custom_logger = ClickClickLogger()
 
+
 @csrf_exempt
 def scrape_and_store(request):
     custom_logger.log('Triggered endpoint', logging.INFO)
-    
+
     try:
         if request.method == "POST":
             temp_file_path = "automation_project/gen_data/temp.csv"
             to_export_file_path = "automation_project/gen_data/to_export.csv"
-        
+
             def clear_csv(file_path):
                 if os.path.exists(file_path):
                     with open(file_path, 'w', newline='') as file:
                         writer = csv.writer(file)
-                        writer.writerow([]) 
-            
+                        writer.writerow([])
+
             if os.path.exists(temp_file_path):
                 if os.path.getsize(temp_file_path) > 0:
                     try:
@@ -47,9 +48,20 @@ def scrape_and_store(request):
                         pass
             else:
                 pd.DataFrame().to_csv(to_export_file_path, index=False)
-            
-            limit = int(request.POST.get("limit", 0))
+
+            # Get the limit and set a default value of 2 if not provided or invalid
+            limit = request.POST.get("limit", "2")
             content = request.POST.get("content")
+
+            # Log received values
+            custom_logger.log(f'Received limit: {limit}', logging.INFO)
+            custom_logger.log(f'Received content: {content}', logging.INFO)
+
+            try:
+                limit = int(limit)
+            except ValueError:
+                limit = 2  # Default to 2 if the limit is not provided or invalid
+
             url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
             scraped_data = scraper(url)
             details = []
@@ -66,21 +78,19 @@ def scrape_and_store(request):
                     facebook_search_term = scraped_data[i]['Company name']
                 scrape_data_with_email["Company Email"] = scraper_social_for_business_email(facebook_search_term)
                 details.append(scrape_data_with_email)
-            
+
             data = {"data": details}
             df = pd.DataFrame(data["data"])
             rows_list = [list(row.to_dict().values()) for index, row in df.iterrows()]
             df.to_csv(temp_file_path, index=False)
-            
+
             return render(request, 'index.html', {'data': rows_list})
         else:
             return redirect('/')
     except Exception as e:
         custom_logger.log(f'Error: {str(e)}', logging.ERROR)
         return JsonResponse({"error": str(e)}, status=500)
-
-
-
+    
 @csrf_exempt
 def default_view(request=None):
     try:
