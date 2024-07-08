@@ -52,8 +52,7 @@ def scraper(url):
     all_data = []
     driver = None
     try:
-        driver = uc.Chrome(use_subprocess=True, options=option)
-        time.sleep(2)
+        driver = uc.Chrome(options=option)
         driver.get(url)
         driver.save_screenshot('automation_project/gen_data/screenshot1.png')
         
