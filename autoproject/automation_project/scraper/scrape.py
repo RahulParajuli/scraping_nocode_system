@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+import bs4
 import requests
 import pandas as pd
 from selenium import webdriver
@@ -40,7 +41,7 @@ def looper(element):
     return data
 
 def scraper(url):
-
+    print("URL: ", url)
     option = uc.ChromeOptions()
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_argument('--disable-gpu')
@@ -64,6 +65,7 @@ def scraper(url):
         element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
         data = looper(element)
         all_data.extend(data)
+        print(bs4.BeautifulSoup(driver.page_source, 'html.parser'))
         next_button = driver.find_element(By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")
         next_button.click()
         time.sleep(1.5)
