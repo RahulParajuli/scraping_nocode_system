@@ -49,18 +49,16 @@ def scrape_and_store(request):
             else:
                 pd.DataFrame().to_csv(to_export_file_path, index=False)
 
-            # Get the limit and set a default value of 2 if not provided or invalid
             limit = request.POST.get("limit", "2")
             content = request.POST.get("content")
 
-            # Log received values
             custom_logger.log(f'Received limit: {limit}', logging.INFO)
             custom_logger.log(f'Received content: {content}', logging.INFO)
 
             try:
                 limit = int(limit)
             except ValueError:
-                limit = 2  # Default to 2 if the limit is not provided or invalid
+                limit = 2
 
             url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
             scraped_data = scraper(url)
