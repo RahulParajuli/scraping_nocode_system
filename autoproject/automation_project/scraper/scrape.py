@@ -66,6 +66,11 @@ def scraper(url):
         wait = WebDriverWait(driver, 20)  # Increased wait time
         
         print("Wait set")
+        try:
+            driver.save_screenshot("screenshot.png")
+        except Exception as e:
+            print("Error saving screenshot:", e)
+            pass
         element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
         print("Element:", element)
         data = looper(element)
