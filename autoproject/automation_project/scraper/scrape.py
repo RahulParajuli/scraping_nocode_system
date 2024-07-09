@@ -55,14 +55,17 @@ def scraper(url):
     options.add_argument("--disable-renderer-backgrounding")
     options.add_argument("--disable-backgrounding-occluded-windows")
 
+    print("Options set")
     all_data = []
     driver = None
     try:
         driver = uc.Chrome(options=options)
         time.sleep(2)
+        print("Driver started")
         driver.get(url)
         wait = WebDriverWait(driver, 20)  # Increased wait time
         
+        print("Wait set")
         element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
         print("Element:", element)
         data = looper(element)
