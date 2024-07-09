@@ -18,8 +18,8 @@ def scrape_and_store(request):
 
     try:
         if request.method == "POST":
-            temp_file_path = "automation_project/gen_data/temp.csv"
-            to_export_file_path = "automation_project/gen_data/to_export.csv"
+            temp_file_path = "temp.csv"
+            to_export_file_path = "to_export.csv"
 
             def clear_csv(file_path):
                 if os.path.exists(file_path):
@@ -93,8 +93,8 @@ def scrape_and_store(request):
 @csrf_exempt
 def default_view(request=None):
     try:
-        temp_file_path = "automation_project/gen_data/temp.csv"
-        to_export_file_path = "automation_project/gen_data/to_export.csv"
+        temp_file_path = "temp.csv"
+        to_export_file_path = "to_export.csv"
 
         if not os.path.exists(temp_file_path):
             pd.DataFrame().to_csv(temp_file_path, index=False)
@@ -126,7 +126,7 @@ def default_view(request=None):
 @csrf_exempt
 def download(request):
     try:
-        file_path = "automation_project/gen_data/to_export.csv"
+        file_path = "to_export.csv"
         if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
             response = FileResponse(open(file_path, "rb"))
             response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
@@ -149,7 +149,7 @@ def process_data(request):
                 try:
                     data = json.loads(selected_rows)  # Use json.loads for safer data handling
                     df = pd.DataFrame(data, columns=headers)
-                    df.to_csv("automation_project/gen_data/to_export.csv", index=False)
+                    df.to_csv("to_export.csv", index=False)
                     return JsonResponse({"message": "Data added to CSV successfully"}, status=200)
                 except json.JSONDecodeError as e:
                     # Handle JSON parsing errors
@@ -161,10 +161,10 @@ def process_data(request):
                     return JsonResponse({"error": str(e)}, status=500)
             else:
                 # Handle the case where no data is provided
-                if os.path.exists("automation_project/gen_data/to_export.csv"):
-                    os.remove("automation_project/gen_data/to_export.csv")
-                if os.path.exists("automation_project/gen_data/temp.csv"):
-                    os.remove("automation_project/gen_data/temp.csv")
+                if os.path.exists("to_export.csv"):
+                    os.remove("to_export.csv")
+                if os.path.exists("temp.csv"):
+                    os.remove("temp.csv")
                 
                 return JsonResponse({"message": "No data to process, files removed"}, status=200)
         else:
@@ -175,7 +175,7 @@ def process_data(request):
 
 def display_csv(request):
     try:
-        csv_file_path = 'automation_project/gen_data/temp.csv'
+        csv_file_path = 'temp.csv'
         if not os.path.exists(csv_file_path):
             pd.DataFrame().to_csv(csv_file_path, index=False)
 
