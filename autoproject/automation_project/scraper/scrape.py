@@ -3,6 +3,7 @@ import re
 import time
 import requests
 import pandas as pd
+import bs4
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -67,16 +68,22 @@ def scraper(url):
         
         print("Wait set")
         try:
-            driver.save_screenshot("screenshot.png")
-        except Exception as e:
-            print("Error saving screenshot:", e)
-            pass
-        element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
-        print("Element:", element)
-        data = looper(element)
-        all_data.extend(data)
+            #print page p tags content
+            print("Page content:", driver.page_source)
 
-        print("All Data:", all_data)
+        except Exception as e:
+            print("Error getting source", e)
+            pass
+        try:
+            element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
+            print("Element:", element)
+            data = looper(element)
+            all_data.extend(data)
+
+            print("All Data:", all_data)
+        except Exception as e:
+            print("Error getting element", e)
+            pass
         
         time.sleep(2)
         next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
