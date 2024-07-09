@@ -4,21 +4,26 @@ import time
 import requests
 import pandas as pd
 from selenium import webdriver
-from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+import undetected_chromedriver as uc
+from undetected_chromedriver import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import undetected_chromedriver as uc
+
 from autoproject.logger import ClickClickLogger
+
 
 MAX_RETRIES = 3
 custom_logger = ClickClickLogger()
 
 def parse_email(text):
+    
     email_pattern = r'[\w\.-]+@[\w\.-]+'
     email_holder = re.search(email_pattern, text, flags=re.IGNORECASE)
-    return email_holder.group() if email_holder else None
+    email = email_holder.group() if email_holder else None
+    return email
 
 def is_website_okay(url):
     try:
@@ -27,14 +32,15 @@ def is_website_okay(url):
     except requests.exceptions.RequestException:
         return False
 
-def looper(elements):
-    data = [element.text for element in elements]
-    print(data)
+def looper(element):
+    data = []
+    for i in element:
+        content = i.text
+        data.append(content)
     return data
 
 def scraper(url):
-    print("started scraping...")
-    print(url)
+
     option = uc.ChromeOptions()
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_argument('--disable-gpu')
@@ -43,44 +49,35 @@ def scraper(url):
     option.add_argument("--incognito")
     option.add_argument("--disable-plugins-discovery")
     option.add_argument("--start-maximized")
+    option.add_argument("--disable-blink-features=AutomationControlled")
     option.add_argument("--disable-infobars")
     option.add_argument("--disable-blink-features")
     option.add_argument("--headless")
-    option.add_argument("--no-sandbox")
-    option.add_argument("--disable-dev-shm-usage")
 
     all_data = []
-    driver = None
     try:
-        driver = uc.Chrome(options=option)
+        driver = uc.Chrome(use_subprocess=True, options=option)
+        print(driver)
         driver.get(url)
-        driver.save_screenshot('automation_project/gen_data/screenshot1.png')
-        
-        wait = WebDriverWait(driver, 20)  # Increased wait time
-        
-        element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
-        print("Element:", element)
+        time.sleep(1.5)
+        element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
         data = looper(element)
         all_data.extend(data)
-        
-        time.sleep(2)
-        next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
+        next_button = driver.find_element(By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")
         next_button.click()
-        time.sleep(2)
-        
-        element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
+        time.sleep(1.5)
+        element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
         data = looper(element)
         all_data.extend(data)
 
         while True:
-            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
-            buttons = driver.find_elements(By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")
-
-            time.sleep(2)
+            WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
+            buttons = driver.find_elements(By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")
+            time.sleep(1.5)
             if len(buttons) == 1:
                 break
             buttons[1].click()
-            element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
+            element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
             data = looper(element)
             all_data.extend(data)
             time.sleep(1)
@@ -89,8 +86,7 @@ def scraper(url):
         custom_logger.log(f"An error occurred while processing the website: {str(e)}", logging.ERROR)
         return all_data
     finally:
-        if driver:
-            driver.quit()
+        driver.quit()
 
 def scraper_social_for_business_email(url):
     custom_logger.log(f"started facebook crawling...", logging.INFO)
@@ -107,27 +103,29 @@ def scraper_social_for_business_email(url):
     options.add_argument("--disable-application-cache")
     options.add_argument("--disable-web-security")
     options.add_argument("--incognito")
-    prefs = {"profile.default_content_setting_values.geolocation": 2}
-    options.add_experimental_option("prefs", prefs)
+    prefs = {"profile.default_content_setting_values.geolocation" :2}
+    options.add_experimental_option("prefs",prefs)
 
+    options.add_argument("--disable-geolocation")
+    
     scraper = webdriver.Chrome(options=options)
     scraper.set_window_size(2048, 1080)
     try:
-        url = "https://www.google.com/search?q=" + "facebook page " + url
+        url = "https://www.google.com/search?q=" + "facebook page "+ url
         scraper.get(url)
 
-        wait = WebDriverWait(scraper, 10)
-        data = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "byrV5b")))
+        data = scraper.find_element(By.CLASS_NAME, "byrV5b")
         data.click()
 
         time.sleep(5)
-        business_email = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "xieb3on")))
+        business_email = scraper.find_element(By.CLASS_NAME, "xieb3on")
         
         email = parse_email(business_email.text)
+        scraper.quit()
         return email
     except Exception as e:
         custom_logger.log(f"An error occurred while scrapping the website: {str(e)}", logging.ERROR)
         return ""
-    finally:
-        if scraper:
-            scraper.quit()
+    
+   
+        
