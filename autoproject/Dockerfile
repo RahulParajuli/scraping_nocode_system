@@ -13,28 +13,21 @@ RUN apt-get -y update && \
     gnupg && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && dpkg -i google-chrome-stable_current_amd64.deb \
-    && apt-get -f install -y
-
-# Install ChromeDriver
-RUN LATEST_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-    && wget https://chromedriver.storage.googleapis.com/${LATEST_VERSION}/chromedriver_linux64.zip \
-    && unzip chromedriver_linux64.zip \
-    && mv chromedriver /usr/local/bin/chromedriver \
-    && chmod +x /usr/local/bin/chromedriver
+RUN wget -N https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -P /tmp/ && \
+    unzip /tmp/chromedriver_linux64.zip -d /tmp/ && \
+    mv /tmp/chromedriver /usr/local/bin/chromedriver && \
+    rm /tmp/chromedriver_linux64.zip
 
 RUN useradd -m ubuntu
 
 RUN chown ubuntu:ubuntu /usr/local/bin/chromedriver && \
     chmod 0755 /usr/local/bin/chromedriver
 
-# RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-#     echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
-#     apt-get -y update && \
-#     apt-get -y install google-chrome-stable && \
-#     rm -rf /var/lib/apt/lists/*
+RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get -y update && \
+    apt-get -y install google-chrome-stable && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN chmod 777 /autoproject
 
