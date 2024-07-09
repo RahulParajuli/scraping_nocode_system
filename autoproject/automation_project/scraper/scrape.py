@@ -36,7 +36,7 @@ def looper(element):
 def click_accept_all_cookies(driver):
     try:
         accept_all_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Accept all')]"))
+            EC.element_to_be_clickable((By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.nCP5yc.AjY5Oe.DuMIQc.LQeN7.XWZjwc"))
         )
         accept_all_button.click()
         time.sleep(1)  # Wait for the button click to take effect
