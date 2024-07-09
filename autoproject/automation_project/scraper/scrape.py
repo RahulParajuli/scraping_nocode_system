@@ -35,27 +35,37 @@ def looper(elements):
 def scraper(url):
     print("started scraping...")
     print(url)
-    option = uc.ChromeOptions()
-    option.add_argument('--disable-blink-features=AutomationControlled')
-    option.add_argument('--disable-gpu')
-    option.add_argument('--disable-extensions')
-    option.add_argument('--profile-directory=Default')
-    option.add_argument("--incognito")
-    option.add_argument("--disable-plugins-discovery")
-    option.add_argument("--start-maximized")
-    option.add_argument("--disable-infobars")
-    option.add_argument("--disable-blink-features")
-    option.add_argument("--headless")
-    option.add_argument("--no-sandbox")
-    option.add_argument("--disable-dev-shm-usage")
+
+    options = uc.ChromeOptions()
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--profile-directory=Default')
+    options.add_argument("--incognito")
+    options.add_argument("--disable-plugins-discovery")
+    options.add_argument("--start-maximized")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-blink-features")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-web-security")
+    options.add_argument("--disable-client-side-phishing-detection")
+    options.add_argument("--disable-background-timer-throttling")
+    options.add_argument("--disable-renderer-backgrounding")
+    options.add_argument("--disable-backgrounding-occluded-windows")
 
     all_data = []
     driver = None
     try:
-        driver = uc.Chrome(options=option)
+        driver = uc.Chrome(options=options)
         time.sleep(2)
         driver.get(url)
-        driver.save_screenshot('automation_project/gen_data/screenshot1.png')
+        try:
+            driver.save_screenshot('automation_project/screenshot1.png')
+        except Exception as e:
+            custom_logger.log(f"An error occurred while taking screenshot: {str(e)}", logging.ERROR)
+            pass
         
         wait = WebDriverWait(driver, 20)  # Increased wait time
         

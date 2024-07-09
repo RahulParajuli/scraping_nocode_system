@@ -31,6 +31,8 @@ RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-ke
 
 RUN chmod 777 /autoproject
 
+RUN chown -R ubuntu:ubuntu /autoproject
+
 EXPOSE 8000
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
