@@ -61,18 +61,14 @@ def scraper(url):
         driver = uc.Chrome(options=options)
         time.sleep(2)
         driver.get(url)
-        try:
-            driver.save_screenshot('automation_project/screenshot1.png')
-        except Exception as e:
-            custom_logger.log(f"An error occurred while taking screenshot: {str(e)}", logging.ERROR)
-            pass
-        
         wait = WebDriverWait(driver, 20)  # Increased wait time
         
         element = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "NwqBmc")))
         print("Element:", element)
         data = looper(element)
         all_data.extend(data)
+
+        print("All Data:", all_data)
         
         time.sleep(2)
         next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-INsAgc.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.Rj2Mlf.OLiIxf.PDpWxe.P62QJc.LQeN7.sspfN.Ehmv4e.cLUxtc")))
