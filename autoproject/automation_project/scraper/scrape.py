@@ -55,10 +55,15 @@ def scraper(url):
     option.add_argument("--disable-blink-features=AutomationControlled")
     option.add_argument("--disable-infobars")
     option.add_argument("--disable-blink-features")
-    option.add_argument("--headless")
+    option.add_argument("--headless")  # Run Chrome in headless mode
+    option.add_argument("--no-sandbox")  # Required for running in a Docker container
+    option.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+    option.add_argument("--remote-debugging-port=9222")  # Add this to avoid "DevToolsActivePort" error
+    option.add_argument("--disable-web-security")  # Disable web security for cross-origin requests
 
     all_data = []
     try:
+        # Automatically get the correct ChromeDriver version for the current Chrome version
         driver = uc.Chrome(use_subprocess=True, options=option)
         print(driver)
         driver.get(url)
@@ -96,7 +101,7 @@ def scraper(url):
         driver.quit()
 
 def scraper_social_for_business_email(url):
-    custom_logger.log(f"started facebook crawling...", logging.INFO)
+    custom_logger.log(f"Started Facebook crawling...", logging.INFO)
     option = uc.ChromeOptions()
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_argument('--disable-gpu')
@@ -108,30 +113,41 @@ def scraper_social_for_business_email(url):
     option.add_argument("--disable-blink-features=AutomationControlled")
     option.add_argument("--disable-infobars")
     option.add_argument("--disable-blink-features")
-    option.add_argument("--headless")
-    prefs = {"profile.default_content_setting_values.geolocation" :2}
-    option.add_experimental_option("prefs",prefs)
+    option.add_argument("--headless")  # Run Chrome in headless mode
+    option.add_argument("--no-sandbox")  # Required for running in a Docker container
+    option.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+    option.add_argument("--remote-debugging-port=9222")  # Avoid "DevToolsActivePort" error
+    option.add_argument("--disable-web-security")  # Disable web security for cross-origin requests
 
+    # Set geolocation preferences
+    prefs = {"profile.default_content_setting_values.geolocation": 2}
+    option.add_experimental_option("prefs", prefs)
     option.add_argument("--disable-geolocation")
-    
-    scraper = webdriver.Chrome(options=option)
+
+    # Initialize the Chrome WebDriver
+    scraper = uc.Chrome(use_subprocess=True, options=option)
     scraper.set_window_size(2048, 1080)
     try:
-        url = "https://www.google.com/search?q=" + "facebook page "+ url
-        scraper.get(url)
+        # Build the Google search URL
+        search_url = "https://www.google.com/search?q=" + "facebook page " + url
+        scraper.get(search_url)
 
         # Try to click "Accept All" cookies button if it appears
         click_accept_all_cookies(scraper)
 
+        # Find and click the Facebook page link
         data = scraper.find_element(By.CLASS_NAME, "byrV5b")
         data.click()
 
         time.sleep(5)
+
+        # Find the business email
         business_email = scraper.find_element(By.CLASS_NAME, "xieb3on")
-        
+
+        # Extract the email address
         email = parse_email(business_email.text)
         scraper.quit()
         return email
     except Exception as e:
-        custom_logger.log(f"An error occurred while scrapping the website: {str(e)}", logging.ERROR)
+        custom_logger.log(f"An error occurred while scraping the website: {str(e)}", logging.ERROR)
         return ""
