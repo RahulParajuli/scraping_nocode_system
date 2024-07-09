@@ -97,25 +97,24 @@ def scraper(url):
 
 def scraper_social_for_business_email(url):
     custom_logger.log(f"started facebook crawling...", logging.INFO)
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-infobars")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-blink-features")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-notifications")
-    options.add_argument("--disable-application-cache")
-    options.add_argument("--disable-web-security")
-    options.add_argument("--incognito")
+    option = uc.ChromeOptions()
+    option.add_argument('--disable-blink-features=AutomationControlled')
+    option.add_argument('--disable-gpu')
+    option.add_argument('--disable-extensions')
+    option.add_argument('--profile-directory=Default')
+    option.add_argument("--incognito")
+    option.add_argument("--disable-plugins-discovery")
+    option.add_argument("--start-maximized")
+    option.add_argument("--disable-blink-features=AutomationControlled")
+    option.add_argument("--disable-infobars")
+    option.add_argument("--disable-blink-features")
+    option.add_argument("--headless")
     prefs = {"profile.default_content_setting_values.geolocation" :2}
-    options.add_experimental_option("prefs",prefs)
+    option.add_experimental_option("prefs",prefs)
 
-    options.add_argument("--disable-geolocation")
+    option.add_argument("--disable-geolocation")
     
-    scraper = webdriver.Chrome(options=options)
+    scraper = webdriver.Chrome(options=option)
     scraper.set_window_size(2048, 1080)
     try:
         url = "https://www.google.com/search?q=" + "facebook page "+ url
