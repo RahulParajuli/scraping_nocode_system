@@ -14,10 +14,10 @@ custom_logger = ClickClickLogger()
 def scrape_and_store(request):
     # channel_layer = get_channel_layer()
     redirect("/")
-    if os.path.exists("automation_project/gen_data/to_export.csv"): 
-        os.remove("automation_project/gen_data/to_export.csv")
-    if os.path.exists("automation_project/gen_data/temp.csv"): 
-        os.remove("automation_project/gen_data/temp.csv")
+    if os.path.exists("to_export.csv"): 
+        os.remove("to_export.csv")
+    if os.path.exists("temp.csv"): 
+        os.remove("temp.csv")
     redirect('/')
     custom_logger.log(f'Triggered endpoint', logging.INFO)
     try:
@@ -34,6 +34,7 @@ def scrape_and_store(request):
                 limit = 0
             url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
             scraped_data = scraper(url)
+            print(scraped_data)
 
             details = []
             for i, data in enumerate(scraped_data):
@@ -70,14 +71,14 @@ def scrape_and_store(request):
             for index, row in df.iterrows():
                 row_dict = row.to_dict()  # Convert the row to a dictionary if needed
                 rows_list.append(list(row_dict.values()))
-            df.to_csv("automation_project/gen_data/temp.csv", index=False)
+            df.to_csv("temp.csv", index=False)
         
             
             render(request, 'index.html', {'data': rows_list})
             return redirect('/')
         else:
             #custom_logger.log(f'Database save status\t{save}', logging.ERROR)
-            return redirect('/')
+            return redirect('')
     except Exception as e:
         custom_logger.log(f'Database save status"\t{str(e)}', logging.ERROR)
         return JsonResponse({"error": e})
@@ -92,10 +93,10 @@ def default_view(request=None):
     # with open(csv_file_path, 'r', newline='') as file:
     #     reader = csv.reader(file)
     df = pd.DataFrame()
-    if os.path.exists("automation_project/gen_data/to_export.csv"): 
-        df = pd.read_csv("automation_project/gen_data/to_export.csv")
-    elif os.path.exists("automation_project/gen_data/temp.csv"):  
-        df = pd.read_csv("automation_project/gen_data/temp.csv")
+    if os.path.exists("to_export.csv"): 
+        df = pd.read_csv("to_export.csv")
+    elif os.path.exists("temp.csv"):  
+        df = pd.read_csv("temp.csv")
     else : 
         return render(request, 'index.html', {"data" : []})
     # data = [x if x else ["Untraced"] for x in list(reader)]
@@ -118,9 +119,7 @@ from django.http import FileResponse
 
 @csrf_exempt
 def download(request):
-    file = "automation_project/gen_data/to_export.csv"
-    if not os.path.exists(file): 
-        return JsonResponse({"error": "Select the rows and update date to download first"})
+    file = "to_export.csv"
     fileopen = open(file, "rb")
     response = FileResponse(fileopen)
     response['Content-Disposition'] = 'attachment; filename="to_export.csv"'
@@ -137,12 +136,12 @@ def process_data(request):
         data = eval(selected_rows)
         print(data)
         df = pd.DataFrame(data, columns = headers)
-        df.to_csv("automation_project/gen_data/to_export.csv", index=False)
+        df.to_csv("to_export.csv", index=False)
     else : 
-        if os.path.exists("automation_project/gen_data/to_export.csv"): 
-            os.remove("automation_project/gen_data/to_export.csv")
-        if os.path.exists("automation_project/gen_data/temp.csv"): 
-            os.remove("automation_project/gen_data/temp.csv")
+        if os.path.exists("to_export.csv"): 
+            os.remove("to_export.csv")
+        if os.path.exists("temp.csv"): 
+            os.remove("temp.csv")
     #     df = pd.DataFrame()
     #     df.to_csv("temp.csv", index=False)
     #     df.to_csv("to_export.csv", index=False)
@@ -150,7 +149,7 @@ def process_data(request):
 
 import csv 
 def display_csv(request):
-    csv_file_path = 'automation_project/gen_data/temp.csv'  # Update with your CSV file path
+    csv_file_path = 'temp.csv'  # Update with your CSV file path
     with open(csv_file_path, 'r', newline='') as file:
         reader = csv.reader(file)
         data = list(reader)
