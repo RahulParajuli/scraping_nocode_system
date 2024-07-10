@@ -19,6 +19,12 @@ def parse_email(text):
     email = email_holder.group() if email_holder else None
     return email
 
+def parse_fb_address(text):
+    address_pattern = r'^([^\n]+)\n[\+\d\s\(\)\-\.\/\w]{7,}'
+    address_holder = re.search(address_pattern, text)
+    address = address_holder.group() if address_holder else None
+    return address
+
 def is_website_okay(url):
     try:
         response = requests.get(url)
@@ -35,33 +41,33 @@ def looper(element):
 
 def click_accept_all_cookies(driver):
     try:
-        accept_all_button = WebDriverWait(driver, 10).until(
+        accept_all_button = WebDriverWait(driver, 3).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-dgl2Hf.nCP5yc.AjY5Oe.DuMIQc.LQeN7.XWZjwc"))
         )
         accept_all_button.click()
         time.sleep(1)  # Wait for the button click to take effect
     except Exception as e:
-        custom_logger.log(f"Accept all cookies button not found: {str(e)}")
+        custom_logger.log(f"Accept all cookies button not found (Google): {e.msg if hasattr(e, 'msg') else str(e)}")
 
 def close_popup_if_present(driver):
     try:
-        popup_close_button = WebDriverWait(driver, 10).until(
+        popup_close_button = WebDriverWait(driver, 3).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "x92rtbv.x10l6tqk.x1tk7jg1.x1vjfegm"))
         )
         popup_close_button.click()
         time.sleep(1) 
     except Exception as e:
-        custom_logger.log("Popup not found or already closed.")
+        custom_logger.log(f"Facebook popup not found: {e.msg if hasattr(e, 'msg') else str(e)}")
     
 def click_accept_all_other_cookie(driver):
     try:
-        accept_all_button = WebDriverWait(driver, 10).until(
+        accept_all_button = WebDriverWait(driver, 3).until(
             EC.element_to_be_clickable((By.CLASS_NAME, "tHlp8d"))
         )
         accept_all_button.click()
         time.sleep(1) 
     except Exception as e:
-        custom_logger.log(f"Accept all cookies button not found: {str(e)}")
+        custom_logger.log(f"Accept all cookies button not found (facebook): {e.msg if hasattr(e, 'msg') else str(e)}")
 
 def create_driver():
     option = uc.ChromeOptions()
@@ -126,7 +132,6 @@ def scraper(url):
 
 def scraper_social_for_business_email(url):
     driver = create_driver()
-    custom_logger.log("Started Facebook crawling...")
     try:
         search_url = "https://www.google.com/search?q=" + "facebook page " + url
         driver.get(search_url)
@@ -134,7 +139,7 @@ def scraper_social_for_business_email(url):
         click_accept_all_cookies(driver)
         click_accept_all_other_cookie(driver)
 
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 3)
         data = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "byrV5b")))
 
         time.sleep(1)
@@ -148,6 +153,9 @@ def scraper_social_for_business_email(url):
         close_popup_if_present(driver)
 
         business_email = driver.find_element(By.CLASS_NAME, "xieb3on")
+
+        # location = parse_fb_address(business_email.text)
+        # print("location: ",location)
 
         email = parse_email(business_email.text)
         return email
