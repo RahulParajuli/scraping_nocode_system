@@ -1,260 +1,271 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
- @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fancy UI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
 
-body {
-  background: #f2f2f2;
-  font-family: 'Open Sans', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-}
+    body {
+      background: #f4f4f9;
+      font-family: 'Open Sans', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-.wrap {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  padding: 30px;
-  max-width: 1200px;
-  width: 100%;
-  box-sizing: border-box;
-  text-align: center;
-}
+    .wrap {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      padding: 40px;
+      max-width: 1200px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
 
-h3 {
-  color: #333;
-  margin-bottom: 15px;
-  font-size: 28px;
-  font-weight: 600;
-}
+    h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
 
-h4 {
-  color: #666;
-  margin-bottom: 30px;
-  font-size: 18px;
-  font-weight: 400;
-}
+    h4 {
+      color: #555;
+      margin-bottom: 25px;
+      font-size: 20px;
+      font-weight: 400;
+    }
 
-.search {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 30px;
-}
+    .search {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
 
-.searchTerm {
-  flex: 1;
-  min-width: 300px;
-  max-width: 100%;
-  border: 2px solid #00B4CC;
-  padding: 12px;
-  height: 45px;
-  border-radius: 5px 0 0 5px;
-  outline: none;
-  color: #2d312f;
-  box-sizing: border-box;
-  font-size: 16px;
-}
+    .searchTerm {
+      flex: 1;
+      min-width: 250px;
+      max-width: 100%;
+      border: 2px solid #007BFF;
+      padding: 12px;
+      height: 50px;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+      color: #333;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-.searchTerm:focus {
-  color: #00B4CC;
-}
+    .searchTerm:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 
-.searchTermII {
-  flex: 1;
-  min-width: 150px;
-  max-width: 100%;
-  border: 2px solid #00B4CC;
-  color: #9DBFAF;
-  height: 45px;
-  padding: 12px;
-  margin-left: 10px;
-  border-radius: 5px;
-  outline: none;
-  box-sizing: border-box;
-  font-size: 16px;
-}
+    .searchTermII {
+      flex: 1;
+      min-width: 150px;
+      max-width: 100%;
+      border: 2px solid #007BFF;
+      color: #6c757d;
+      height: 50px;
+      padding: 12px;
+      margin-left: 10px;
+      border-radius: 8px;
+      outline: none;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-.searchButton {
-  height: 45px;
-  border: 2px solid #00B4CC;
-  background: #00B4CC;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-left: 10px;
-  padding: 0 15px;
-}
+    .searchTermII:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 
-.searchButton:hover {
-  background-color: #fff;
-  color: #00B4CC;
-}
+    .searchButton {
+      height: 50px;
+      border: 2px solid #007BFF;
+      background: #007BFF;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 0 5px 10px rgba(0, 123, 255, 0.2);
+      margin-left: 10px;
+      padding: 0 20px;
+      transition: all 0.3s ease;
+    }
 
-.export {
-  border: 2px solid #00B4CC;
-  background: #00B4CC;
-  text-align: center;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 12px 20px;
-  margin: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  text-decoration: none;
-  font-size: 16px;
-}
+    .searchButton:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
 
-.process {
-  border: 2px solid #00B4CC;
-  background: #00B4CC;
-  text-align: center;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 12px 20px;
-  margin: 10px;
-  font-size: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    .export, .process {
+      border: 2px solid #007BFF;
+      background: #007BFF;
+      text-align: center;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 14px 25px;
+      margin: 10px;
+      font-size: 18px;
+      box-shadow: 0 5px 10px rgba(0, 123, 255, 0.2);
+      display: inline-block;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
 
-.export:hover, .process:hover {
-  background-color: #fff;
-  color: #00B4CC;
-}
+    .process {
+      background: #28a745;
+      border-color: #28a745;
+    }
 
-table {
-  margin: 20px auto;
-  border-collapse: collapse;
-  border: 1px solid #ddd;
-  width: 100%;
-  max-height: 500px;
-  overflow-y: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    .export:hover, .process:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
 
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-}
+    .process:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
 
-th {
-  background-color: #00B4CC;
-  color: #fff;
-  font-size: 16px;
-}
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+      width: 100%;
+      max-height: 500px;
+      overflow-y: auto;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    }
 
-td {
-  background-color: #fff;
-  font-size: 14px;
-}
+    th, td {
+      padding: 15px 20px;
+      text-align: left;
+    }
 
-tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
+    th {
+      background-color: #007BFF;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-tr:hover {
-  background-color: #f1f1f1;
-}
+    td {
+      background-color: #fff;
+      font-size: 15px;
+    }
 
-@media (max-width: 768px) {
-  .searchTerm, .searchTermII {
-    width: 100%;
-  }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-  .searchButton {
-    width: 100%;
-    margin-top: 10px;
-  }
+    tr:hover {
+      background-color: #e0e0e0;
+    }
 
-  .export, .process {
-    display: block;
-    width: calc(100% - 20px);
-    margin: 10px auto;
-    padding: 12px 0;
-    font-size: 16px;
-  }
+    @media (max-width: 768px) {
+      .searchTerm, .searchTermII {
+        width: 100%;
+      }
 
-  table {
-    margin: 20px auto;
-    max-height: none;
-    overflow: visible;
-  }
-}
+      .searchButton {
+        width: 100%;
+        margin-top: 10px;
+      }
 
-@media (max-width: 480px) {
-  .searchTerm, .searchTermII, .searchButton {
-    height: 40px;
-  }
+      .export, .process {
+        display: block;
+        width: calc(100% - 20px);
+        margin: 10px auto;
+        padding: 14px 0;
+        font-size: 18px;
+      }
 
-  .searchButton {
-    font-size: 18px;
-    padding: 0 10px;
-  }
+      table {
+        margin: 20px auto;
+        max-height: none;
+        overflow: visible;
+      }
+    }
 
-  .export, .process {
-    padding: 10px;
-    font-size: 14px;
-  }
-}
+    @media (max-width: 480px) {
+      .searchTerm, .searchTermII, .searchButton {
+        height: 45px;
+      }
 
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      .searchButton {
+        font-size: 16px;
+        padding: 0 15px;
+      }
+
+      .export, .process {
+        padding: 12px;
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <div class="wrap">
-      <h3> Details Scrapper</h3>
-      <h4>Scraps Details from Google and Facebook</h4>
-      <div>
-        <form method="post" class="search" action="{% url 'data' %}">
-          <input type="text" class="searchTerm" placeholder="What are you looking for?" name="content">
-          <input type="text" class="searchTermII" placeholder="Set Search Limit (Optional)" name="limit">
-          <button type="submit" class="searchButton">
-            <i class="fa fa-search"></i>
-          </button>
-        </form>
+  <div class="wrap">
+    <h3><i class="fa fa-search"></i> Click Click</h3>
+    <h4>Search for company details and update the table with selected rows</h4>
+    <div>
+      <form method="post" class="search" action="{% url 'data' %}">
+        <input type="text" class="searchTerm" placeholder="What are you looking for?" name="content">
+        <input type="text" class="searchTermII" placeholder="Set Search Limit (Optional)" name="limit">
+        <button type="submit" class="searchButton">
+          <i class="fa fa-search"></i>
+        </button>
+      </form>
     </div>
 
     <form method="POST" id="processForm">
       <input class="process" id="process" type="submit" value="Update table with selected rows">
       <a class="export" href="{% url 'download' %}"> Export Table As CSV <i class="fa fa-download"></i> </a>
-      <br> <br>  
+      <br> <br>
       <table border="1">
-          <thead>
-              <tr>
-                  <th>Select</th>
-                  <th>Company Name</th>
-                  <th>Company Number</th>
-                  <th>Company Location</th>
-                  <th>Company Email</th>
-                  <!-- Add more headers for additional columns -->
-              </tr>
-          </thead>
-          <tbody id="dataTable">
-            {% for row in data %}
-            <tr class="row-value">
-                <td><input type="checkbox" name="selected_rows" value="{{ row.pk }}" class="row-checkbox"></td>
-                {% for column in row %}
-                <td>{{ column }}</td>
-                {% endfor %}
-            </tr>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Company Name</th>
+            <th>Company Number</th>
+            <th>Company Location</th>
+            <th>Company Email</th>
+            <!-- Add more headers for additional columns -->
+          </tr>
+        </thead>
+        <tbody id="dataTable">
+          {% for row in data %}
+          <tr class="row-value">
+            <td><input type="checkbox" name="selected_rows" value="{{ row.pk }}" class="row-checkbox"></td>
+            {% for column in row %}
+            <td>{{ column }}</td>
             {% endfor %}
+          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </form>
-  
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  document.getElementById('process').addEventListener('click', function(event) {
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    document.getElementById('process').addEventListener('click', function(event) {
       event.preventDefault();  // Prevent the default form submission
 
       var selectedRows = [];
@@ -267,36 +278,35 @@ tr:hover {
         if (checkboxes.length > 0 && checkboxes[0].checked) {
           var cells = rows[i].getElementsByTagName('td');
           for (var j = 0; j < cells.length; j++) {
-              var value = cells[j].innerHTML;
-              if (j != 0) {  // Skip the first cell (checkbox)
-                instance.push(value)
-              }
+            var value = cells[j].innerHTML;
+            if (j != 0) {  // Skip the first cell (checkbox)
+              instance.push(value)
+            }
           }
           if (instance.length > 0) {
             selectedRows.push(instance)
           }
         }
-      } 
+      }
 
       // Send selectedRows to Django function using AJAX
       $.ajax({
-          type: 'POST',
-          url: '{% url "process_data" %}',
-          data: {
-              'selected_rows': JSON.stringify(selectedRows),
-              'csrfmiddlewaretoken': '{{ csrf_token }}'
-          },
-          success: function(data) {
-              // Handle success response
-              alert('Data processed successfully');
-          },
-          error: function(xhr, status, error) {
-              // Handle error
-              alert('An error occurred: ' + xhr.responseText);
-          }
+        type: 'POST',
+        url: '{% url "process_data" %}',
+        data: {
+          'selected_rows': JSON.stringify(selectedRows),
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(data) {
+          // Handle success response
+          alert('Data processed successfully');
+        },
+        error: function(xhr, status, error) {
+          // Handle error
+          alert('An error occurred: ' + xhr.responseText);
+        }
       });
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
