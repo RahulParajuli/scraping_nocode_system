@@ -41,7 +41,27 @@ def click_accept_all_cookies(driver):
         accept_all_button.click()
         time.sleep(1)  # Wait for the button click to take effect
     except Exception as e:
-        custom_logger.log(f"Accept all cookies button not found: {str(e)}", logging.WARNING)
+        custom_logger.log(f"Accept all cookies button not found: {str(e)}")
+
+def close_popup_if_present(driver):
+    try:
+        popup_close_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "x92rtbv.x10l6tqk.x1tk7jg1.x1vjfegm"))
+        )
+        popup_close_button.click()
+        time.sleep(1) 
+    except Exception as e:
+        custom_logger.log("Popup not found or already closed.")
+    
+def click_accept_all_other_cookie(driver):
+    try:
+        accept_all_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "tHlp8d"))
+        )
+        accept_all_button.click()
+        time.sleep(1) 
+    except Exception as e:
+        custom_logger.log(f"Accept all cookies button not found: {str(e)}")
 
 def create_driver():
     option = uc.ChromeOptions()
@@ -61,12 +81,10 @@ def create_driver():
     option.add_argument("--remote-debugging-port=9222")  # Add this to avoid "DevToolsActivePort" error
     option.add_argument("--disable-web-security")  # Disable web security for cross-origin requests
 
-    # Set geolocation preferences
     prefs = {"profile.default_content_setting_values.geolocation": 2}
     option.add_experimental_option("prefs", prefs)
     option.add_argument("--disable-geolocation")
 
-    # Initialize the Chrome WebDriver
     driver = uc.Chrome(use_subprocess=True, options=option)
     driver.set_window_size(2048, 1080)
     return driver
@@ -76,8 +94,8 @@ def scraper(url):
     all_data = []
     try:
         driver.get(url)
-        # Try to click "Accept All" cookies button if it appears
         click_accept_all_cookies(driver)
+        click_accept_all_other_cookie(driver)
         
         time.sleep(1.5)
         element = driver.find_elements(By.CLASS_NAME, "NwqBmc")
@@ -103,35 +121,38 @@ def scraper(url):
             time.sleep(1)
         return all_data
     except Exception as e:
-        custom_logger.log(f"An error occurred while processing the website: {str(e)}", logging.ERROR)
+        custom_logger.log(f"An error occurred while processing the website: {str(e)}")
         return all_data
 
 def scraper_social_for_business_email(url):
     driver = create_driver()
-    custom_logger.log(f"Started Facebook crawling...", logging.INFO)
+    custom_logger.log("Started Facebook crawling...")
     try:
-        # Build the Google search URL
         search_url = "https://www.google.com/search?q=" + "facebook page " + url
         driver.get(search_url)
 
-        print("page_content: ", driver.page_source)
+        click_accept_all_cookies(driver)
+        click_accept_all_other_cookie(driver)
 
-        # Wait for the Facebook page link to be clickable and click it
         wait = WebDriverWait(driver, 10)
         data = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "byrV5b")))
 
-        # Scroll to the element and click using JavaScript
+        time.sleep(1)
+        close_popup_if_present(driver)
+
         driver.execute_script("arguments[0].scrollIntoView(true);", data)
         driver.execute_script("arguments[0].click();", data)
 
-        time.sleep(3)
+        time.sleep(1)
 
-        # Find the business email
+        close_popup_if_present(driver)
+
         business_email = driver.find_element(By.CLASS_NAME, "xieb3on")
 
-        # Extract the email address
         email = parse_email(business_email.text)
         return email
     except Exception as e:
-        custom_logger.log(f"An error occurred while scraping the website: {str(e)}", logging.ERROR)
+        custom_logger.log(f"An error occurred while processing the website: {str(e)}")
         return ""
+    finally:
+        driver.quit()
