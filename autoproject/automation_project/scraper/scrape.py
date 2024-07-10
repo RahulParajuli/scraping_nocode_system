@@ -160,7 +160,7 @@ def scraper_social_for_business_email(url):
         email = parse_email(business_email.text)
         return email
     except Exception as e:
-        custom_logger.log(f"An error occurred while processing the website: {str(e)}")
+        custom_logger.log(f"Accept all cookies button not found (Google): {e.msg if hasattr(e, 'msg') else str(e)}")
         return ""
     finally:
         driver.quit()
