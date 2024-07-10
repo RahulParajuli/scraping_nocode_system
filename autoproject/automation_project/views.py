@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from automation_project.scraper.scrape import scraper, scraper_social_for_business_email
 from automation_project.detailsextraction.extractor import extract
 from autoproject.logger import ClickClickLogger
+# from automation_project.scraper.scrape import create_driver
 import csv
 
 custom_logger = ClickClickLogger()

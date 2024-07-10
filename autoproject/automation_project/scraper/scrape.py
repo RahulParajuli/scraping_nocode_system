@@ -43,7 +43,7 @@ def click_accept_all_cookies(driver):
     except Exception as e:
         custom_logger.log(f"Accept all cookies button not found: {str(e)}", logging.WARNING)
 
-def scraper(url):
+def create_driver():
     option = uc.ChromeOptions()
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_argument('--disable-gpu')
@@ -61,13 +61,21 @@ def scraper(url):
     option.add_argument("--remote-debugging-port=9222")  # Add this to avoid "DevToolsActivePort" error
     option.add_argument("--disable-web-security")  # Disable web security for cross-origin requests
 
+    # Set geolocation preferences
+    prefs = {"profile.default_content_setting_values.geolocation": 2}
+    option.add_experimental_option("prefs", prefs)
+    option.add_argument("--disable-geolocation")
+
+    # Initialize the Chrome WebDriver
+    driver = uc.Chrome(use_subprocess=True, options=option)
+    driver.set_window_size(2048, 1080)
+    return driver
+
+def scraper(url):
+    driver = create_driver()
     all_data = []
     try:
-        # Automatically get the correct ChromeDriver version for the current Chrome version
-        driver = uc.Chrome(use_subprocess=True, options=option)
-        print(driver)
         driver.get(url)
-        
         # Try to click "Accept All" cookies button if it appears
         click_accept_all_cookies(driver)
         
@@ -97,56 +105,32 @@ def scraper(url):
     except Exception as e:
         custom_logger.log(f"An error occurred while processing the website: {str(e)}", logging.ERROR)
         return all_data
-    finally:
-        driver.quit()
 
 def scraper_social_for_business_email(url):
+    driver = create_driver()
     custom_logger.log(f"Started Facebook crawling...", logging.INFO)
-    option = uc.ChromeOptions()
-    option.add_argument('--disable-blink-features=AutomationControlled')
-    option.add_argument('--disable-gpu')
-    option.add_argument('--disable-extensions')
-    option.add_argument('--profile-directory=Default')
-    option.add_argument("--incognito")
-    option.add_argument("--disable-plugins-discovery")
-    option.add_argument("--start-maximized")
-    option.add_argument("--disable-blink-features=AutomationControlled")
-    option.add_argument("--disable-infobars")
-    option.add_argument("--disable-blink-features")
-    option.add_argument("--headless")  # Run Chrome in headless mode
-    option.add_argument("--no-sandbox")  # Required for running in a Docker container
-    option.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-    option.add_argument("--remote-debugging-port=9222")  # Avoid "DevToolsActivePort" error
-    option.add_argument("--disable-web-security")  # Disable web security for cross-origin requests
-
-    # Set geolocation preferences
-    prefs = {"profile.default_content_setting_values.geolocation": 2}
-    option.add_experimental_option("prefs", prefs)
-    option.add_argument("--disable-geolocation")
-
-    # Initialize the Chrome WebDriver
-    scraper = uc.Chrome(use_subprocess=True, options=option)
-    scraper.set_window_size(2048, 1080)
     try:
         # Build the Google search URL
         search_url = "https://www.google.com/search?q=" + "facebook page " + url
-        scraper.get(search_url)
+        driver.get(search_url)
 
-        # Try to click "Accept All" cookies button if it appears
-        click_accept_all_cookies(scraper)
+        print("page_content: ", driver.page_source)
 
-        # Find and click the Facebook page link
-        data = scraper.find_element(By.CLASS_NAME, "byrV5b")
-        data.click()
+        # Wait for the Facebook page link to be clickable and click it
+        wait = WebDriverWait(driver, 10)
+        data = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "byrV5b")))
 
-        time.sleep(5)
+        # Scroll to the element and click using JavaScript
+        driver.execute_script("arguments[0].scrollIntoView(true);", data)
+        driver.execute_script("arguments[0].click();", data)
+
+        time.sleep(3)
 
         # Find the business email
-        business_email = scraper.find_element(By.CLASS_NAME, "xieb3on")
+        business_email = driver.find_element(By.CLASS_NAME, "xieb3on")
 
         # Extract the email address
         email = parse_email(business_email.text)
-        scraper.quit()
         return email
     except Exception as e:
         custom_logger.log(f"An error occurred while scraping the website: {str(e)}", logging.ERROR)
