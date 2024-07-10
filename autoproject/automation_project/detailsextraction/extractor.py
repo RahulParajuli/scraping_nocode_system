@@ -6,7 +6,7 @@ def extract(text):
     name_regex = r'^([^\n]+)'
     # number_finder = r'\+\d{1,3}(?:[-\s]?\d{1,4}){1,5}'
     number_finder=r'(?<!\d)(?:\d[\d\s-]*){5,}(?!\d)'
-    location_pattern = r'\b\w+\n\w+(?:,\s\w+)+\s\w+\b'
+    location_pattern = r'(?<=\n)[A-Za-z\s\-]+(?=\n[0-9])'
 
     # Extract name
     name_holder = re.search(name_regex, text)

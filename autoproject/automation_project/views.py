@@ -15,8 +15,6 @@ custom_logger = ClickClickLogger()
 
 @csrf_exempt
 def scrape_and_store(request):
-    custom_logger.log('Triggered endpoint', logging.INFO)
-
     try:
         if request.method == "POST":
             temp_file_path = "temp.csv"
@@ -59,7 +57,7 @@ def scrape_and_store(request):
             try:
                 limit = int(limit)
             except ValueError:
-                limit = 2
+                limit = 10
 
             url = f"https://www.google.com/localservices/prolist?g2lbs=AP8S6ENVYaPlUqcpp5HFvzYE-khspk5ZxM7UvCPm_mrThLHuOOuoVhvujWM4YXtq4ZMQsSh1MG2ABSTirzgWdxto0NPXtv1pZWmQ6kYBduBDBF9QJC4dd9HZd4niObLIbzEuBxwPcxvE&hl=en-NP&gl=np&cs=1&ssta=1&oq={content}&src=2&sa=X&q={content}&ved=0CAUQjdcJahgKEwjg8IiHroyBAxUAAAAAHQAAAAAQ4wI&scp=ChdnY2lkOnJlYWxfZXN0YXRlX2FnZW5jeRIAGgAqDEVzdGF0ZSBBZ2VudA%3D%3D&slp=MgBAAVIECAIgAIgBAJoBBgoCFxkQAA%3D%3D"
             scraped_data = scraper(url)
@@ -67,7 +65,6 @@ def scrape_and_store(request):
             for i, data in enumerate(scraped_data):
                 if limit != 0 and i + 1 > limit:
                     break
-                custom_logger.log(f'Total scraps : {i}', logging.INFO)
                 scraped_data[i] = extract(data)
                 scrape_data_with_email = scraped_data[i]
                 scrape_data_with_email["Company Email"] = ""
