@@ -149,7 +149,7 @@ def scraper_social_for_business_email(url):
         driver.execute_script("arguments[0].click();", data)
 
         time.sleep(1)
-
+        
         close_popup_if_present(driver)
 
         business_email = driver.find_element(By.CLASS_NAME, "xieb3on")
@@ -160,7 +160,7 @@ def scraper_social_for_business_email(url):
         email = parse_email(business_email.text)
         return email
     except Exception as e:
-        custom_logger.log(f"Accept all cookies button not found (Google): {e.msg if hasattr(e, 'msg') else str(e)}")
+        custom_logger.log(f"Email not found: {e.msg if hasattr(e, 'msg') else str(e)}")
         return ""
     finally:
         driver.quit()
