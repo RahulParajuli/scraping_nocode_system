@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Click Click</title>
+  <title>Company Search</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
@@ -27,6 +28,10 @@
       width: 100%;
       box-sizing: border-box;
       text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 20px;
     }
 
     h3 {
@@ -56,10 +61,10 @@
       flex: 1;
       min-width: 250px;
       max-width: 100%;
-      border: 2px solid #007BFF;
+      border: 2px solid #00C2CC;
       padding: 12px;
       height: 50px;
-      border-radius: 8px 0 0 8px;
+      border-radius: 8px;
       outline: none;
       color: #333;
       box-sizing: border-box;
@@ -68,7 +73,7 @@
     }
 
     .searchTerm:focus {
-      border-color: #0056b3;
+      border-color: #007bff;
       box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
 
@@ -76,7 +81,7 @@
       flex: 1;
       min-width: 150px;
       max-width: 100%;
-      border: 2px solid #007BFF;
+      border: 2px solid #00C2CC;
       color: #6c757d;
       height: 50px;
       padding: 12px;
@@ -89,32 +94,50 @@
     }
 
     .searchTermII:focus {
-      border-color: #0056b3;
+      border-color: #007bff;
       box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
 
     .searchButton {
       height: 50px;
-      border: 2px solid #007BFF;
-      background: #007BFF;
+      border: 2px solid #EE1D52;
+      background: #EE1D52;
       color: #fff;
       border-radius: 8px;
       cursor: pointer;
       font-size: 18px;
-      box-shadow: 0 5px 10px rgba(0, 123, 255, 0.2);
+      box-shadow: 0 5px 10px rgba(238, 29, 82, 0.2);
       margin-left: 10px;
       padding: 0 20px;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .searchButton:hover {
-      background-color: #0056b3;
-      border-color: #0056b3;
+      background-color: #c00045;
+      border-color: #c00045;
+    }
+
+    .loader {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 4px solid #3498db;
+      width: 20px;
+      height: 20px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .export, .process {
-      border: 2px solid #007BFF;
-      background: #007BFF;
+      border: 2px solid #00C2CC;
+      background: #00C2CC;
       text-align: center;
       color: #fff;
       border-radius: 8px;
@@ -122,7 +145,7 @@
       padding: 14px 25px;
       margin: 10px;
       font-size: 18px;
-      box-shadow: 0 5px 10px rgba(0, 123, 255, 0.2);
+      box-shadow: 0 5px 10px rgba(0, 194, 204, 0.2);
       display: inline-block;
       text-decoration: none;
       transition: all 0.3s ease;
@@ -134,8 +157,8 @@
     }
 
     .export:hover, .process:hover {
-      background-color: #0056b3;
-      border-color: #0056b3;
+      background-color: #007bff;
+      border-color: #007bff;
     }
 
     .process:hover {
@@ -159,7 +182,7 @@
     }
 
     th {
-      background-color: #007BFF;
+      background-color: #00C2CC;
       color: #fff;
       font-size: 18px;
       font-weight: 600;
@@ -218,41 +241,87 @@
         font-size: 16px;
       }
     }
+    .styled-button, .searchButton {
+      background-color: #EE1D52; /* Company color */
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .styled-button:hover, .searchButton:hover {
+      background-color: #00C2CC; /* Company color */
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3; /* Light grey */
+      border-top: 4px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none; /* Hide loader by default */
+      z-index: 9999; /* Ensure loader is on top */
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .wrap {
+      position: relative; /* Ensure the loader is positioned relative to the wrapper */
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h3><i class="fa fa-search"></i> Click Click</h3>
-    <h4>Search for company details and update the table with selected rows</h4>
+    <div class="logo">
+      <img src="{% static 'images/logo.jpg' %}" alt="Logo" style="height: 80px;">
+    </div>
+    <h3>Find Details</h3>
+    <h4>Update the table with selected rows and download the CSV file</h4>
     <div>
       <form method="post" class="search" action="{% url 'data' %}">
+        {% csrf_token %}
         <input type="text" class="searchTerm" placeholder="What are you looking for?" name="content">
         <input type="text" class="searchTermII" placeholder="Set Search Limit (Optional)" name="limit">
         <button type="submit" class="searchButton">
           <i class="fa fa-search"></i>
+          <div class="loader" id="searchLoader"></div>
         </button>
       </form>
     </div>
 
-    <form method="POST" id="processForm">
+    <form method="POST" id="processForm" action="{% url 'process_data' %}">
+      {% csrf_token %}
+      <input type="hidden" id="selectedRows" name="selected_rows">
       <input class="process" id="process" type="submit" value="Update table with selected rows">
       <a class="export" href="{% url 'download' %}"> Export Table As CSV <i class="fa fa-download"></i> </a>
       <br> <br>
+      <button type="button" id="selectAllButton" class="styled-button">Select All</button>
+      <div id="loader" class="loader"></div>
       <table border="1">
         <thead>
           <tr>
             <th>Select</th>
-            <th>Company Name</th>
-            <th>Company Number</th>
-            <th>Company Location</th>
-            <th>Company Email</th>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Location</th>
+            <th>Email</th>
             <!-- Add more headers for additional columns -->
           </tr>
         </thead>
         <tbody id="dataTable">
           {% for row in data %}
           <tr class="row-value">
-            <td><input type="checkbox" name="selected_rows" value="{{ row.pk }}" class="row-checkbox"></td>
+            <td><input type="checkbox" value="{{ row.pk }}" class="row-checkbox"></td>
             {% for column in row %}
             <td>{{ column }}</td>
             {% endfor %}
@@ -263,8 +332,26 @@
     </form>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+    document.getElementById('selectAllButton').addEventListener('click', function() {
+      var checkboxes = document.getElementsByClassName('row-checkbox');
+      var allChecked = true;
+
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (!checkboxes[i].checked) {
+          allChecked = false;
+          break;
+        }
+      }
+
+      for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = !allChecked;
+      }
+
+      // Update button text based on selection state
+      this.textContent = allChecked ? 'Select All' : 'Unselect All';
+    });
+
     document.getElementById('process').addEventListener('click', function(event) {
       event.preventDefault();  // Prevent the default form submission
 
@@ -273,21 +360,24 @@
       var rows = table.getElementsByTagName('tr');
 
       for (var i = 0; i < rows.length; i++) {
-        var instance = []
+        var instance = [];
         var checkboxes = rows[i].getElementsByClassName('row-checkbox');
         if (checkboxes.length > 0 && checkboxes[0].checked) {
           var cells = rows[i].getElementsByTagName('td');
           for (var j = 0; j < cells.length; j++) {
             var value = cells[j].innerHTML;
             if (j != 0) {  // Skip the first cell (checkbox)
-              instance.push(value)
+              instance.push(value);
             }
           }
           if (instance.length > 0) {
-            selectedRows.push(instance)
+            selectedRows.push(instance);
           }
         }
       }
+
+      // Show the loader
+      document.getElementById('loader').style.display = 'block';
 
       // Send selectedRows to Django function using AJAX
       $.ajax({
@@ -298,15 +388,25 @@
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(data) {
+          // Hide the loader
+          document.getElementById('loader').style.display = 'none';
           // Handle success response
           alert('Data processed successfully');
         },
         error: function(xhr, status, error) {
+          // Hide the loader
+          document.getElementById('loader').style.display = 'none';
           // Handle error
           alert('An error occurred: ' + xhr.responseText);
         }
       });
     });
+
+    // Show loader during search form submission
+    document.querySelector('.searchButton').addEventListener('click', function() {
+      document.getElementById('searchLoader').style.display = 'block';
+    });
   </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
